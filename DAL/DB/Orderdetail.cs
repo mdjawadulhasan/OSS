@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OSS.DB
+namespace DAL.DB
 {
     using System;
     using System.Collections.Generic;

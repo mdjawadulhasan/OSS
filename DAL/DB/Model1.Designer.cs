@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'F:\OneDrive\OneDrive - American International University-Bangladesh\Desktop\BS23\OSS\OSS\DB\Model1.edmx'. 
+﻿// T4 code generation is enabled for model 'D:\OSS\DAL\DB\Model1.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

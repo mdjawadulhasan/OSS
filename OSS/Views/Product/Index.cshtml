@@ -12,6 +12,8 @@
         <th>Name</th>
         <th>Price</th>
         <th>Descriptiion</th>
+        <th>Ed</th>
+        <th>Dlt</th>
         <th>Add to Cart</th>
 
     </tr>
@@ -22,6 +24,8 @@
             <td>@b.Name</td>
             <td>@b.Price</td>
             <td>@b.Descriptiion</td>
+            <td><a href="/product/edit/@b.Id" class="btn btn-info">Edit</a></td>
+            <td><a href="/product/delete/@b.Id" class="btn btn-danger">Delete</a></td>
             <td>
                 <form method="post" action="/product/addcart/@b.Id">
                     <input type="hidden" name="id" value="@b.Id" />

@@ -7,21 +7,23 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OSS.DB
+namespace DAL.DB
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class Order
+    public partial class Product
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Order()
+        public Product()
         {
             this.Orderdetails = new HashSet<Orderdetail>();
         }
     
         public int Id { get; set; }
-        public Nullable<int> Amount { get; set; }
+        public string Name { get; set; }
+        public Nullable<int> Price { get; set; }
+        public string Descriptiion { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Orderdetail> Orderdetails { get; set; }

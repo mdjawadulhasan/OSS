@@ -1,5 +1,6 @@
-﻿using OSS.DB;
-using OSS.Models;
+﻿using BLL;
+using BLL.DTOs;
+using BLL.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +12,11 @@ namespace OSS.Controllers
 {
     public class ProductController : Controller
     {
-        // GET: Product
+
         public ActionResult Index()
         {
-            var db = new ShoppingSystemEntities();
-            var products = db.Products.ToList();
+
+            var products = ProductService.GetProducts();
             return View(products);
 
         }
@@ -23,16 +24,15 @@ namespace OSS.Controllers
 
         public ActionResult Create()
         {
-
             return View();
         }
+
+
         [HttpPost]
-        public ActionResult Create(Product p)
+        public ActionResult Create(ProductDTO p)
         {
 
-            var db = new ShoppingSystemEntities();
-            db.Products.Add(p);
-            db.SaveChanges();
+            ProductService.Add(p);
             return RedirectToAction("Index");
         }
 
@@ -40,88 +40,52 @@ namespace OSS.Controllers
         [HttpGet]
         public ActionResult Edit(int id)
         {
-            var db = new ShoppingSystemEntities();
-            var p = (from b in db.Products
-                     where b.Id == id
-                     select b).SingleOrDefault();
+
+            var p = ProductService.Get(id);
             return View(p);
         }
 
 
         [HttpPost]
-        public ActionResult Edit(Product p)
+        public ActionResult Edit(ProductDTO p)
         {
-            var db = new ShoppingSystemEntities();
-            var ext = (from b in db.Products
-                       where b.Id == p.Id
-                       select b).SingleOrDefault();
-
-
-            db.Entry(ext).CurrentValues.SetValues(p);
-
-            db.SaveChanges();
-
+            ProductService.Update(p);
             return RedirectToAction("Index");
         }
 
 
         public ActionResult Delete(int id)
         {
-            var db = new ShoppingSystemEntities();
-            Product exp = db.Products.Where(temp => temp.Id == id).FirstOrDefault();
-            db.Products.Remove(exp);
-            db.SaveChanges();
+            ProductService.Delete(id);
             return RedirectToAction("Index");
         }
 
 
 
+
         public ActionResult Addcart()
         {
-            var db = new ShoppingSystemEntities();
+           
+
             int id = Convert.ToInt32(Request.Form["id"]);
             int quantity = Convert.ToInt32(Request.Form["quantity"]);
 
             if (Session["p"] == null)
             {
-                Product exp = db.Products.Where(temp => temp.Id == id).FirstOrDefault();
-                ProductModelClass pr = new ProductModelClass();
-                Random rnd = new Random();
-                int randomNum = rnd.Next(100000, 999999);
 
-                pr.tempid = randomNum;
-                pr.Id = exp.Id;
-                pr.Name = exp.Name;
-                pr.Price = (int)exp.Price;
-                pr.Descriptiion = exp.Descriptiion;
-                pr.Qty = quantity;
-
-                List<ProductModelClass> p = new List<ProductModelClass>();
-                p.Add(pr);
-
+                var prod = ProductService.AddToCart(id, quantity);
+                List<CartModel> p = new List<CartModel>();
+                p.Add(prod);
                 string json = new JavaScriptSerializer().Serialize(p);
                 Session["p"] = json;
             }
             else
             {
                 string json = Session["p"].ToString();
-                var d = new JavaScriptSerializer().Deserialize<List<ProductModelClass>>(json);
-                Product exp = db.Products.Where(temp => temp.Id == id).FirstOrDefault();
-
-                ProductModelClass pr = new ProductModelClass();
-
-                Random rnd = new Random();
-                int randomNum = rnd.Next(100000, 999999);
-
-                pr.tempid = randomNum;
-                pr.Id = exp.Id;
-                pr.Name = exp.Name;
-                pr.Price = (int)exp.Price;
-                pr.Descriptiion = exp.Descriptiion;
-                pr.Qty = quantity;
-
-                d.Add(pr);
-
+                var d = new JavaScriptSerializer().Deserialize<List<CartModel>>(json);
+               
+                var prod = ProductService.AddToCart(id, quantity);
+                d.Add(prod);
                 json = new JavaScriptSerializer().Serialize(d);
                 Session["p"] = json;
             }
@@ -131,16 +95,13 @@ namespace OSS.Controllers
 
 
 
-        public ActionResult removefromcart(int id)
+        public ActionResult Removefromcart(int id)
         {
             string json = Session["p"].ToString();
-            var d = new JavaScriptSerializer().Deserialize<List<ProductModelClass>>(json);
+            var d = new JavaScriptSerializer().Deserialize<List<CartModel>>(json);          
             d.RemoveAll(p => p.tempid == id);
-
             json = new JavaScriptSerializer().Serialize(d);
             Session["p"] = json;
-
-
             return RedirectToAction("Show");
         }
 
@@ -153,47 +114,25 @@ namespace OSS.Controllers
             }
 
             string json = Session["p"].ToString();
-            var products = new JavaScriptSerializer().Deserialize<List<ProductModelClass>>(json);
-
+            var products = new JavaScriptSerializer().Deserialize<List<CartModel>>(json);
             int totalPrice = products.Sum(p => p.Price * p.Qty);
-
             ViewBag.TotalPrice = totalPrice;
-
             return View(products);
         }
 
 
-
+        
         public ActionResult confirm()
         {
-            var db = new ShoppingSystemEntities();
-
-
+    
             string json = Session["p"].ToString();
-            var p = new JavaScriptSerializer().Deserialize<List<ProductModelClass>>(json);
-            int totalPrice = p.Sum(pp => pp.Price * pp.Qty);
-            Order or = new Order();
-            or.Amount = totalPrice;
-            db.Orders.Add(or);
-            db.SaveChanges();
-
-            foreach (var b in p)
-            {
-                Orderdetail od = new Orderdetail();
-                od.Orderid = or.Id;
-                od.Productid = b.Id;
-                od.Unitprice = b.Price;
-                od.Qty=b.Qty;
-
-                db.Orderdetails.Add(od);
-                db.SaveChanges();
-
-            }
-
+            var p = new JavaScriptSerializer().Deserialize<List<CartModel>>(json);
+            OrderService.ConfirmOrder(p);
             Session["p"] = null;
-
             return RedirectToAction("Index");
         }
-
+        
     }
 }
+
+

@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="ShoppingSystemModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="ShoppingSystemModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Orderdetails">
           <Key>
             <PropertyRef Name="id" />
@@ -68,7 +68,8 @@
             <End Role="Orderdetails" EntitySet="Orderdetails" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ShoppingSystemModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -80,9 +81,9 @@
           <Property Name="Productid" Type="Int32" />
           <Property Name="Orderid" Type="Int32" />
           <Property Name="Unitprice" Type="Int32" />
+          <Property Name="Qty" Type="Int32" />
           <NavigationProperty Name="Order" Relationship="Self.FK_Orderdetails_Order" FromRole="Orderdetails" ToRole="Orders" />
           <NavigationProperty Name="Product" Relationship="Self.FK_Orderdetails_Orderdetails" FromRole="Orderdetails" ToRole="Products" />
-          <Property Name="Qty" Type="Int32" />
         </EntityType>
         <EntityType Name="Order">
           <Key>
@@ -148,11 +149,11 @@
           <EntitySetMapping Name="Orderdetails">
             <EntityTypeMapping TypeName="ShoppingSystemModel.Orderdetail">
               <MappingFragment StoreEntitySet="Orderdetails">
-                <ScalarProperty Name="Qty" ColumnName="Qty" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="Productid" ColumnName="Productid" />
                 <ScalarProperty Name="Orderid" ColumnName="Orderid" />
                 <ScalarProperty Name="Unitprice" ColumnName="Unitprice" />
+                <ScalarProperty Name="Qty" ColumnName="Qty" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
