@@ -22,8 +22,13 @@
             <td>@b.Name</td>
             <td>@b.Price</td>
             <td>@b.Descriptiion</td>
-           
-            <td><a href="/product/addcart/@b.Id" class="btn btn-success">Add to Cart</a></td>
+            <td>
+                <form method="post" action="/product/addcart/@b.Id">
+                    <input type="hidden" name="id" value="@b.Id" />
+                    <input type="number" name="quantity" value="1" min="1" max="100" />
+                    <button type="submit" class="btn btn-success">Add to Cart</button>
+                </form>
+            </td>
         </tr>
     }
 </table>

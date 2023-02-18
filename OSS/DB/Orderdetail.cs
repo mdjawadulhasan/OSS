@@ -17,7 +17,8 @@ namespace OSS.DB
         public int id { get; set; }
         public Nullable<int> Productid { get; set; }
         public Nullable<int> Orderid { get; set; }
-        public string Unitprice { get; set; }
+        public Nullable<int> Unitprice { get; set; }
+        public Nullable<int> Qty { get; set; }
     
         public virtual Order Order { get; set; }
         public virtual Product Product { get; set; }

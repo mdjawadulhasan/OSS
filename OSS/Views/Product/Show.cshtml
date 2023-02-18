@@ -6,26 +6,33 @@
 <h2>Show</h2>
 
 
-<table class="table table-bordered">
-    <tr>
-
-        <th>Name</th>
-        <th>Price</th>
-
-
-    </tr>
-    @foreach (var b in Model)
-    {
+@if (Model.Count > 0)
+{
+    <table class="table table-bordered">
         <tr>
-
-            <td>@b.Name</td>
-            <td>@b.Price</td>
-
-
+            <th>Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Remove</th>
         </tr>
-    }
-</table>
+        @foreach (var b in Model)
+        {
+            <tr>
+                <td>@b.Name</td>
+                <td>@b.Price</td>
+                <td>@b.Qty</td>
+                <td><a href="/product/removefromcart/@b.tempid" class="btn btn-danger">Remove From Cart</a></td>
+            </tr>
+        }
+        <tr>
+            <td colspan="2">Total Price:</td>
+            <td>@ViewBag.TotalPrice</td>
+        </tr>
+    </table>
+    <cener><a href="/product/confirm" class="btn btn-success">Confirm</a></cener>
+}
 
-
-<cener><a href="/product/confirm" class="btn btn-success">Confirm</a></cener>
-
+else
+{
+    <div>No products to show.</div>
+}

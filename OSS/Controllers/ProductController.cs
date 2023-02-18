@@ -76,28 +76,31 @@ namespace OSS.Controllers
 
 
 
-        public ActionResult Addcart(int id)
+        public ActionResult Addcart()
         {
             var db = new ShoppingSystemEntities();
+            int id = Convert.ToInt32(Request.Form["id"]);
+            int quantity = Convert.ToInt32(Request.Form["quantity"]);
+
             if (Session["p"] == null)
             {
-
-
                 Product exp = db.Products.Where(temp => temp.Id == id).FirstOrDefault();
                 ProductModelClass pr = new ProductModelClass();
+                Random rnd = new Random();
+                int randomNum = rnd.Next(100000, 999999);
+
+                pr.tempid = randomNum;
                 pr.Id = exp.Id;
                 pr.Name = exp.Name;
-                pr.Price = exp.Price;
+                pr.Price = (int)exp.Price;
                 pr.Descriptiion = exp.Descriptiion;
-
-
+                pr.Qty = quantity;
 
                 List<ProductModelClass> p = new List<ProductModelClass>();
                 p.Add(pr);
 
                 string json = new JavaScriptSerializer().Serialize(p);
                 Session["p"] = json;
-                return RedirectToAction("Index");
             }
             else
             {
@@ -106,38 +109,59 @@ namespace OSS.Controllers
                 Product exp = db.Products.Where(temp => temp.Id == id).FirstOrDefault();
 
                 ProductModelClass pr = new ProductModelClass();
+
+                Random rnd = new Random();
+                int randomNum = rnd.Next(100000, 999999);
+
+                pr.tempid = randomNum;
                 pr.Id = exp.Id;
                 pr.Name = exp.Name;
-                pr.Price = exp.Price;
+                pr.Price = (int)exp.Price;
                 pr.Descriptiion = exp.Descriptiion;
-                d.Add(pr);
+                pr.Qty = quantity;
 
+                d.Add(pr);
 
                 json = new JavaScriptSerializer().Serialize(d);
                 Session["p"] = json;
-                return RedirectToAction("Index");
             }
 
+            return RedirectToAction("Index");
+        }
 
+
+
+        public ActionResult removefromcart(int id)
+        {
+            string json = Session["p"].ToString();
+            var d = new JavaScriptSerializer().Deserialize<List<ProductModelClass>>(json);
+            d.RemoveAll(p => p.tempid == id);
+
+            json = new JavaScriptSerializer().Serialize(d);
+            Session["p"] = json;
+
+
+            return RedirectToAction("Show");
         }
 
 
         public ActionResult Show()
         {
-
             if (Session["p"] == null)
             {
                 return RedirectToAction("Index");
             }
-            else
-            {
-                string json = Session["p"].ToString();
-                var p = new JavaScriptSerializer().Deserialize<List<ProductModelClass>>(json);
-                return View(p);
-            }
 
+            string json = Session["p"].ToString();
+            var products = new JavaScriptSerializer().Deserialize<List<ProductModelClass>>(json);
 
+            int totalPrice = products.Sum(p => p.Price * p.Qty);
+
+            ViewBag.TotalPrice = totalPrice;
+
+            return View(products);
         }
+
 
 
         public ActionResult confirm()
@@ -147,9 +171,9 @@ namespace OSS.Controllers
 
             string json = Session["p"].ToString();
             var p = new JavaScriptSerializer().Deserialize<List<ProductModelClass>>(json);
-
+            int totalPrice = p.Sum(pp => pp.Price * pp.Qty);
             Order or = new Order();
-            or.Amount = 10000.ToString();
+            or.Amount = totalPrice;
             db.Orders.Add(or);
             db.SaveChanges();
 
@@ -159,11 +183,15 @@ namespace OSS.Controllers
                 od.Orderid = or.Id;
                 od.Productid = b.Id;
                 od.Unitprice = b.Price;
+                od.Qty=b.Qty;
 
                 db.Orderdetails.Add(od);
                 db.SaveChanges();
 
             }
+
+            Session["p"] = null;
+
             return RedirectToAction("Index");
         }
 
